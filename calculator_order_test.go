@@ -25,43 +25,61 @@ func TestBundleDiscountThreeOrder(t *testing.T) {
 }
 
 func TestCalculateOrderNotMember(t *testing.T) {
-	actual := CalculateOrder(Order{
-		RedSet:    0,
-		GreenSet:  3,
-		BlueSet:   0,
-		YellowSet: 0,
-		PinkSet:   0,
-		PurpleSet: 0,
-		OrangeSet: 0,
-		IsMember:  false})
+	order := NewOrder()
+	actual := order.CalculateOrder(OrderRequest{
+		Items: []Item{{
+			Menu:  "Green Set",
+			Count: 3,
+		}},
+		IsMember: false})
 
 	assert.Equal(t, float64(116), actual)
 }
 
 func TestCalculateOrderHaveMember(t *testing.T) {
-	actual := CalculateOrder(Order{
-		RedSet:    0,
-		GreenSet:  3,
-		BlueSet:   0,
-		YellowSet: 0,
-		PinkSet:   0,
-		PurpleSet: 0,
-		OrangeSet: 0,
-		IsMember:  true})
+	order := NewOrder()
+	actual := order.CalculateOrder(OrderRequest{
+		Items: []Item{{
+			Menu:  "Green Set",
+			Count: 3,
+		}},
+		IsMember: true})
 
 	assert.Equal(t, 104.4, actual)
 }
 
 func TestCalculateOrderAllSetWithThreeOrderAndHaveMember(t *testing.T) {
-	actual := CalculateOrder(Order{
-		RedSet:    3,
-		GreenSet:  3,
-		BlueSet:   3,
-		YellowSet: 3,
-		PinkSet:   3,
-		PurpleSet: 3,
-		OrangeSet: 3,
-		IsMember:  true})
+	order := NewOrder()
+	actual := order.CalculateOrder(OrderRequest{
+		Items: []Item{
+			{
+				Menu:  "Red Set",
+				Count: 3,
+			}, {
+				Menu:  "Green Set",
+				Count: 3,
+			}, {
+				Menu:  "Blue Set",
+				Count: 3,
+			},
+			{
+				Menu:  "Yellow Set",
+				Count: 3,
+			},
+			{
+				Menu:  "Pink Set",
+				Count: 3,
+			},
+			{
+				Menu:  "Purple Set",
+				Count: 3,
+			},
+			{
+				Menu:  "Orange Set",
+				Count: 3,
+			},
+		},
+		IsMember: true})
 
 	assert.Equal(t, 1220.4, actual)
 }

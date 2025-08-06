@@ -12,28 +12,60 @@ const (
 	memberDiscountPercent float64 = 10
 )
 
-type Order struct {
-	RedSet    int
-	GreenSet  int
-	BlueSet   int
-	YellowSet int
-	PinkSet   int
-	PurpleSet int
-	OrangeSet int
-	IsMember  bool
+type OrderImplement interface {
+	CalculateOrder(req OrderRequest) float64
 }
 
-func CalculateOrder(req Order) float64 {
-	redTotal := redSet * float64(req.RedSet)
-	greenTotal := bundleDiscount(greenSet, req.GreenSet)
-	blueTotal := blueSet * float64(req.BlueSet)
-	yellowTotal := yellowSet * float64(req.YellowSet)
-	pinkTotal := bundleDiscount(pinkSet, req.PinkSet)
-	purpleTotal := purpleSet * float64(req.PurpleSet)
-	orangeTotal := bundleDiscount(orangeSet, req.OrangeSet)
-	total := redTotal + greenTotal + blueTotal + yellowTotal + pinkTotal + purpleTotal + orangeTotal
+type orderImplement struct {
+	Menu                  map[string]float64
+	MenuBundleDiscount    map[string]bool
+	MemberDiscountPercent float64
+	BundleDiscountPercent float64
+}
+
+func NewOrder() OrderImplement {
+	return &orderImplement{
+		Menu: map[string]float64{
+			"Red Set":    redSet,
+			"Green Set":  greenSet,
+			"Blue Set":   blueSet,
+			"Yellow Set": yellowSet,
+			"Pink Set":   pinkSet,
+			"Purple Set": purpleSet,
+			"Orange Set": orangeSet,
+		},
+		MenuBundleDiscount: map[string]bool{
+			"Green Set":  true,
+			"Pink Set":   true,
+			"Orange Set": true,
+		},
+		MemberDiscountPercent: memberDiscountPercent,
+		BundleDiscountPercent: bundleDiscountPercent,
+	}
+}
+
+type OrderRequest struct {
+	Items    []Item
+	IsMember bool
+}
+
+type Item struct {
+	Menu  string
+	Count int
+}
+
+func (s *orderImplement) CalculateOrder(req OrderRequest) float64 {
+	var total float64
+	for _, order := range req.Items {
+		if s.MenuBundleDiscount[order.Menu] {
+			total += bundleDiscount(s.Menu[order.Menu], order.Count)
+			continue
+		}
+		total += s.Menu[order.Menu] * float64(order.Count)
+	}
+
 	if req.IsMember {
-		return total * (float64(1) - (memberDiscountPercent / 100))
+		return total * (float64(1) - (s.MemberDiscountPercent / 100))
 	}
 
 	return total
