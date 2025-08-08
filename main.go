@@ -9,7 +9,7 @@ func main() {
 	fmt.Println(order.CalculateOrder(OrderRequest{
 		Items: []Item{{
 			Menu:  "Orange Set",
-			Count: 3,
+			Count: 4,
 		}},
 		IsMember: false,
 	}))
